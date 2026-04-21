@@ -1,0 +1,10 @@
+{
+    "id": "TheAmazingDigitalJoker",
+    "name": "The Amazing Digital Joker",
+    "author": ["MacBack"],
+    "description": "Based around the series known as The Amazing Digital Circus. May contain spoilers.",
+    "version": "0.3.0",
+    "prefix": "tadc",
+    "main_file": "main.lua",
+    "badge_colour": "ff2e2e"
+}
