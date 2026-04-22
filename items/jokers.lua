@@ -41,7 +41,7 @@ SMODS.Joker {
 		If you want to change the static value, you'd only change this number, instead
 		of going through all your code to change each instance individually.
 		]]
-	config = { extra = { mult = 2.5, mult_gain = 0.75 } },
+	config = { extra = { mult = 3, mult_gain = 0.75 } },
 	-- loc_vars gives your loc_text variables to work with, in the format of #n#, n being the variable in order.
 	-- #1# is the first variable in vars, #2# the second, #3# the third, and so on.
 	-- It's also where you'd add to the info_queue, which is where things like the negative tooltip are.
@@ -93,7 +93,7 @@ SMODS.Joker {
             "Removable in {C:attention}#2#{} rounds."
         }
     },
-    config = { extra = { penalty = 0.8, round = 0, maxround = 2 } },
+    config = { extra = { penalty = 0.6, round = 0, maxround = 2 } },
     rarity = 1,
     atlas = 'TADCMODJokers',
     pos = { x = 2, y = 0 },
@@ -105,7 +105,7 @@ SMODS.Joker {
 
     loc_vars = function(self, info_queue, card)
     local r_left = (card.ability.extra.maxround or 2) - math.max(card.ability.extra.round or 0, 0)
-    return { vars = { (card.ability.extra.penalty or 0.8), r_left } }
+    return { vars = { (card.ability.extra.penalty or 0.6), r_left } }
 end,
 
     calculate = function(self, card, context)
@@ -147,7 +147,7 @@ SMODS.Joker {
             "{C:red,E:1}Do not use with Kinger."
         }
     },
-    config = { extra = { mult = 5, mult_gain = 1, spawn_odds = 3, eat_odds = 6, eat_gain = 0.5 } },
+    config = { extra = { mult = 3, mult_gain = 0.25, spawn_odds = 3, eat_odds = 6, eat_gain = 0.5 } },
     loc_vars = function(self, info_queue, card)
         return { vars = { 
             card.ability.extra.mult, 

@@ -3,7 +3,7 @@ SMODS.Enhancement {
     atlas = 'enhancements',
     pos = { x = 0, y = 0 },
     config = { 
-        Xmult = 3, 
+        Xmult = 2.5, 
         bonus_chips = 25,
     }, 
     not_stoned = true,
@@ -39,40 +39,54 @@ SMODS.Enhancement {
     end,
 
     calculate = function(self, card, context)
-    -- Chips fire during card scoring (can retrigger, but chips are fine)
-    if context.main_scoring and context.cardarea == G.play then
-        return {
-            chips = self.config.bonus_chips,
-            card = card
-        }
-    end
-
-    -- X_mult fires in joker_main phase, which is NOT retriggered
-    if context.joker_main then
-        -- Check this card is actually in play
-        local in_play = false
-        if G.play and G.play.cards then
-            for _, c in ipairs(G.play.cards) do
-                if c == card then in_play = true; break end
-            end
+        -- 1. SCORING BONUSES
+        -- Chips fire during main scoring
+        if context.main_scoring and context.cardarea == G.play then
+            return {
+                chips = self.config.bonus_chips,
+                card = card
+            }
         end
-        if in_play then
+
+        -- X_mult fires in joker_main so it doesn't retrigger with Red Seal/Mime
+        if context.joker_main and context.cardarea == G.play then
             return {
                 x_mult = self.config.Xmult,
                 message = localize { type = 'variable', key = 'a_xmult', vars = { self.config.Xmult } }
             }
         end
-    end
 
-    if context.post_scoring and not context.blueprint and not context.repetition then
-        if pseudorandom('abstracted') < G.GAME.probabilities.normal / 4 then
-            return {
-                message = "Cellar!",
-                remove = true
-            }
+        -- 2. DESTRUCTION LOGIC (The Fix)
+        -- This triggers after the hand is finished scoring
+        if context.post_scoring and not context.blueprint and not context.repetition then
+            if pseudorandom('abstracted') < G.GAME.probabilities.normal / 4 then
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function()
+                        attention_text({
+                            text = "Cellar!",
+                            scale = 0.8,
+                            hold = 1,
+                            colour = G.C.FILTER,
+                            align = 'cm',
+                            offset = { x = 0, y = -2.7 },
+                            major = card
+                        })
+                        return true
+                    end
+                }))
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.3,
+                    func = function()
+                        card:start_dissolve()
+                        return true
+                    end
+                }))
+            end
         end
     end
-end
 }
 SMODS.Enhancement {
     key = 'disappearing',

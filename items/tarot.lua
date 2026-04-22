@@ -112,3 +112,57 @@ SMODS.Consumable {
     }))
 end
 }
+SMODS.Consumable {
+    key = 'circus',
+    set = 'Tarot',
+    atlas = 'tarot',
+    pos = { x = 2, y = 0 },  -- adjust to your atlas position
+    config = {},
+
+    loc_txt = {
+        name = 'The Circus',
+        text = {
+            "Spawns a random joker",
+            "from {C:attention}The Amazing Digital Circus{}"
+        }
+    },
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+
+    can_use = function(self, card)
+        -- Can only use if there's room for a joker
+        return #G.jokers.cards < G.jokers.config.card_limit
+    end,
+
+    use = function(self, card, area, copier)
+    local tadc_jokers = {}
+    for key, center in pairs(G.P_CENTERS) do
+        if center.set == 'Joker' 
+        and center.mod 
+        and center.mod.id == 'TheAmazingDigitalJoker'
+        and not center.hidden then
+            table.insert(tadc_jokers, key)
+        end
+    end
+
+    if #tadc_jokers > 0 then
+        local chosen = pseudorandom_element(tadc_jokers, pseudoseed('circus_pick'))
+        SMODS.add_card({
+            set = 'Joker',
+            key = chosen,
+        })
+    end
+
+    G.E_MANAGER:add_event(Event({
+        trigger = 'after',
+        delay = 0.4,
+        func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+            return true
+        end
+    }))
+end
+}
